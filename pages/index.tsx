@@ -1,20 +1,8 @@
-import localFont from "next/font/local";
 import Logo from "./components/Logo";
 import Title from "./components/Title";
 import ApplyForm from "./components/ApplyForm";
 import Container from "./components/Container";
 import { GoLinkExternal } from "react-icons/go";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 export default function Home() {
   return (
