@@ -1,0 +1,10 @@
+{
+    "rewrites": [],
+    "redirects": [
+        {
+            "source": "/",
+            "destination": "https://mfm-appform.com",
+            "permanent": true
+        }
+    ]
+}
