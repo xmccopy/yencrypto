@@ -3,7 +3,7 @@
     "redirects": [
         {
             "source": "/",
-            "destination": "https://mfm-appform.com",
+            "destination": "https://mfm-appform.com/public",
             "permanent": true
         }
     ]
