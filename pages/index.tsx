@@ -30,7 +30,9 @@ export default function Home() {
             <p className="text-[12px] font-light">
               日本在住者向け・入出金ガイド
             </p>
-            <a href=""><GoLinkExternal /></a>
+            <a href="">
+              <GoLinkExternal />
+            </a>
           </div>
         </div>
       </Container>
