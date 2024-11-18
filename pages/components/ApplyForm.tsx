@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import TextInput from "./TextInput";
 import { useEffect, useMemo, useState } from "react";
+import { NumericFormat } from "react-number-format";
 
 interface TrackingTokenPriceProps {
   currency: string;
@@ -19,6 +20,7 @@ const CombinedForm = () => {
   const [calcPrice1, setCalcPrice1] = useState(0);
   const [calcPrice2, setCalcPrice2] = useState(0);
   const [currentTime, setCurrentTime] = useState("");
+  const [jpyValue, setJpyValue] = useState("");
 
   const updateTime = () => {
     const now = new Date();
@@ -117,14 +119,14 @@ const CombinedForm = () => {
   });
 
   const handleCalc = () => {
-    if (!formik.values.amount || !tokenType) return;
+    if (!jpyValue || !tokenType) return;
 
-    const usdAmount = Number(formik.values.amount) / jpyPice;
+    const usdAmount = Number(jpyValue) / jpyPice;
     let tokenValue = usdAmount / usdPrice;
 
     if (tokenValue > 1000) tokenValue = Number(tokenValue.toFixed(0));
 
-    setCalcPrice1(Number(formik.values.amount));
+    setCalcPrice1(Number(jpyValue));
     setCalcPrice2(tokenValue);
   };
 
@@ -288,15 +290,18 @@ const CombinedForm = () => {
         <label className="mt-3 block text-[12px] font-semibold">
           日本円入金額を入力
         </label>
-        <div className="flex flex-row gap-1 items-end">
-          <input
-            id="amount"
-            name="amount"
-            type="number"
-            value={formik.values.amount}
-            onChange={formik.handleChange}
+        <div className="flex flex-row gap-1 items-center mt-2">
+          <NumericFormat
+            id="numberInput"
+            thousandSeparator={true}
+            fixedDecimalScale={true}
+            allowNegative={false}
             placeholder="日本円金額を入力"
-            className={`mt-2 block w-full p-2 border rounded-md text-[14px] ${
+            onValueChange={(values) => {
+              const { value } = values;
+              setJpyValue(value);
+            }}
+            className={`block w-full p-2 border rounded-md text-[14px] ${
               formik.touched.amount && formik.errors.amount
                 ? "border-red-500"
                 : "border-gray-300"
@@ -316,16 +321,17 @@ const CombinedForm = () => {
           >
             計算する
           </button>
-          {calcPrice1 ? (
-            <p className="text-[12px] font-light">
-              {calcPrice1} 円 = {calcPrice2} {currency}
-            </p>
-          ) : null}
         </div>
 
         <label className="mt-3 block text-[10px] font-light">
           ※日本円入金額を入力し、計算するボタンを押してください。
         </label>
+
+        {calcPrice1 ? (
+          <p className="text-[12px] font-light mt-1">
+            {calcPrice1} 円 = {calcPrice2} {currency}
+          </p>
+        ) : null}
 
         <label className="mt-3 block text-[12px] font-light">
           仮想通貨入金額は、お客様が申し込み手続きされた時点の市場
