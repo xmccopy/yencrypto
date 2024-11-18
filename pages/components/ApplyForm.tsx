@@ -5,6 +5,9 @@ import * as Yup from "yup";
 import TextInput from "./TextInput";
 import { useEffect, useMemo, useState } from "react";
 import { NumericFormat } from "react-number-format";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface TrackingTokenPriceProps {
   currency: string;
@@ -17,7 +20,6 @@ const CombinedForm = () => {
   const [tokenType, setTokenType] = useState("BTC");
   const [usdPrice, setPrice] = useState(1);
   const [jpyPice, setJPYPrice] = useState(0);
-  const [calcPrice1, setCalcPrice1] = useState(0);
   const [calcPrice2, setCalcPrice2] = useState(0);
   const [currentTime, setCurrentTime] = useState("");
   const [jpyValue, setJpyValue] = useState("");
@@ -91,7 +93,6 @@ const CombinedForm = () => {
       csid: "",
       participantCount: 0,
       cryptoType: "BTC",
-      amount: "",
     },
     validationSchema: Yup.object({
       firstName: Yup.string().required("氏名は必須です"),
@@ -107,14 +108,41 @@ const CombinedForm = () => {
         .positive()
         .integer(),
       cryptoType: Yup.string().required("仮想通貨を選択してください"),
-      amount: Yup.number()
-        .required("金額を入力してください")
-        .positive()
-        .integer(),
+      // amount: Yup.number()
+      //   .required("金額を入力してください")
+      //   .positive()
+      //   .integer(),
     }),
-    onSubmit: (values) => {
-      // Handle form submission
-      console.log(values);
+    onSubmit: async (values) => {
+      if (!jpyValue) {
+        toast("金額を入力してください", {
+          type: "error",
+          theme: "colored",
+        });
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          "https://6900-104-180-21-85.ngrok-free.app/send-application",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ...values,
+              amount: jpyValue,
+              crypto_amount: calcPrice2,
+            }),
+          }
+        );
+        const result = await response.json();
+        console.log(result);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+      // console.log(values);
     },
   });
 
@@ -126,7 +154,6 @@ const CombinedForm = () => {
 
     if (tokenValue > 1000) tokenValue = Number(tokenValue.toFixed(0));
 
-    setCalcPrice1(Number(jpyValue));
     setCalcPrice2(tokenValue);
   };
 
@@ -247,7 +274,10 @@ const CombinedForm = () => {
         ご入金時にご利用いただく仮想通貨をご選択ください。
       </h2>
       <div className="bg-[#F3F3F3] rounded-[16px] px-[32px] py-[24px]">
-        <label htmlFor="cryptoType" className="block text-[14px] font-semibold text-[#212121]">
+        <label
+          htmlFor="cryptoType"
+          className="block text-[14px] font-semibold text-[#212121]"
+        >
           仮想通貨
         </label>
         <select
@@ -255,7 +285,8 @@ const CombinedForm = () => {
           name="cryptoType"
           value={formik.values.cryptoType}
           onChange={(e) => {
-            setCalcPrice1(0);
+            setJpyValue("0");
+            setCalcPrice2(0);
             setTokenType(e.target.value);
             formik.handleChange(e);
           }}
@@ -265,7 +296,11 @@ const CombinedForm = () => {
               : "border-[#185F03]"
           }`}
         >
-          <option value="BTC" defaultChecked className="text-[14px] text-[#212121]">
+          <option
+            value="BTC"
+            defaultChecked
+            className="text-[14px] text-[#212121]"
+          >
             ビットコイン (BTC)
           </option>
           <option value="ETH" className="text-[14px] text-[#212121]">
@@ -286,32 +321,32 @@ const CombinedForm = () => {
         </label>
       </div>
       <div className="bg-[#F3F3F3] rounded-[16px] px-[32px] py-[24px]">
-        <label className="text-[12px] font-semibold text-[#212121]">仮想通貨数量を計算</label>
+        <label className="text-[12px] font-semibold text-[#212121]">
+          仮想通貨数量を計算
+        </label>
         <label className="mt-3 block text-[12px] font-semibold text-[#212121]">
           日本円入金額を入力
         </label>
         <div className="flex flex-row gap-2 items-center mt-2">
           <NumericFormat
             id="numberInput"
+            name="amount"
             thousandSeparator={true}
             fixedDecimalScale={true}
             allowNegative={false}
             placeholder="日本円金額を入力"
+            value={jpyValue}
             onValueChange={(values) => {
               const { value } = values;
               setJpyValue(value);
             }}
-            className={`block w-full p-2 border rounded-md text-[14px] text-[#212121] ${
-              formik.touched.amount && formik.errors.amount
-                ? "border-red-500"
-                : "border-[#185F03]"
-            }`}
+            className={`block w-full p-2 border rounded-md text-[14px] text-[#212121] border-[#185F03]`}
           />
           <span className="text-[#212121]">円</span>
         </div>
-        {formik.touched.amount && formik.errors.amount ? (
+        {/* {formik.touched.amount && formik.errors.amount ? (
           <div className="text-red-500 mt-1">{formik.errors.amount}</div>
-        ) : null}
+        ) : null} */}
 
         <div className="flex items-center gap-2 mt-4 ">
           <button
@@ -327,11 +362,33 @@ const CombinedForm = () => {
           ※日本円入金額を入力し、計算するボタンを押してください。
         </label>
 
-        {calcPrice1 ? (
-          <p className="text-[12px] font-light mt-1">
-            {calcPrice1} 円 = {calcPrice2} {currency}
-          </p>
-        ) : null}
+        <div>
+          <label className="text-[12px] font-semibold text-[#212121]">
+            必要なビットコイン数:
+          </label>
+
+          <div className="border border-[#185F03] rounded-lg h-[39px] w-full bg-[#FEFEFE] px-[12px] flex items-center justify-between">
+            <p className="text-[12px] text-[#212121] font-semibold">
+              {calcPrice2}
+            </p>
+            <CopyToClipboard
+              text={calcPrice2.toString()}
+              onCopy={() =>
+                toast("Copied to clipboard!", {
+                  type: "success",
+                  theme: "colored",
+                })
+              }
+            >
+              <button
+                type="button"
+                className="py-[2px] px-3 bg-[#E2E2E2] p-10 text-[#185F03] rounded-full text-[14px]"
+              >
+                コピーする
+              </button>
+            </CopyToClipboard>
+          </div>
+        </div>
 
         <label className="mt-3 block text-[12px] font-light text-[#212121]">
           仮想通貨入金額は、お客様が申し込み手続きされた時点の市場
@@ -354,6 +411,7 @@ const CombinedForm = () => {
           申し込み内容送信
         </button>
       </div>
+      <ToastContainer />
     </form>
   );
 };
