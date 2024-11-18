@@ -15,20 +15,40 @@ export default function Home() {
           </div>
           <p className="text-[12px] font-light mb-4">
             下記のフォームをご入力いただき、ご入金時の仮想通貨をご選択
-            ください。ご入金時の仮想通貨送金数量は、以下の表示数量とな
-            ります。
+            ください。ご入金時の仮想通貨送金数量は、以下の表示数量とな ります。
           </p>
           <ApplyForm />
-          <a href="#" className="mt-14 block underline">こちらも併せてご確認ください</a>
+          <a href="#" className="mt-14 block underline">
+            こちらも併せてご確認ください
+          </a>
           <div className="flex flex-row gap-1 items-center">
             <p className="text-[12px] font-light">
-              bitFlyer口座開設方法・Trust Walletアカウント設定方法
+              <a
+                href="https://bitflyer.com/en-jp/s/how-to-start"
+                target="_blank"
+              >
+                bitFlyer口座開設方法
+              </a>
+              ・
+              <a
+                href="https://trustwallet.com/blog/the-official-beginners-guide-to-trust-wallet"
+                target="_blank"
+              >
+                Trust Walletアカウント設定方法
+              </a>
             </p>
-            <a href=""><GoLinkExternal /></a>
+            <a href="">
+              <GoLinkExternal />
+            </a>
           </div>
           <div className="flex flex-row gap-1 items-center">
             <p className="text-[12px] font-light">
-              日本在住者向け・入出金ガイド
+              <a
+                href="https://www.japan-guide.com/e/e2226.html"
+                target="_blank"
+              >
+                日本在住者向け・入出金ガイド
+              </a>
             </p>
             <a href="">
               <GoLinkExternal />
@@ -39,5 +59,3 @@ export default function Home() {
     </>
   );
 }
-
-

@@ -13,7 +13,7 @@ interface TrackingTokenPriceProps {
 }
 
 const CombinedForm = () => {
-  const [tokenType, setTokenType] = useState("");
+  const [tokenType, setTokenType] = useState("BTC");
   const [usdPrice, setPrice] = useState(1);
   const [jpyPice, setJPYPrice] = useState(0);
   const [calcPrice1, setCalcPrice1] = useState(0);
@@ -36,18 +36,22 @@ const CombinedForm = () => {
 
   const handleGetPrice = async (token: string) => {
     if (token === "BTC" || token === "ETH") {
-      const response = await fetch(
-        `https://api.binance.com/api/v3/ticker/price?symbol=${
-          token ? token + "USDT" : "BTCUSDT"
-        }`
-      );
+      try {
+        const response = await fetch(
+          `https://api.binance.com/api/v3/ticker/price?symbol=${
+            token ? token + "USDT" : "BTCUSDT"
+          }`
+        );
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const result = await response.json();
+        updateTime();
+        setPrice(Number(Number(result?.price).toFixed(0)) || 0);
+      } catch (error) {
+        console.log(error);
       }
-      const result = await response.json();
-      updateTime();
-      setPrice(Number(Number(result?.price).toFixed(0)) || 0);
     } else {
       setPrice(1);
     }
@@ -83,8 +87,8 @@ const CombinedForm = () => {
       phone: "",
       applicationType: "",
       csid: "",
-      participantCount: "",
-      cryptoType: "",
+      participantCount: 0,
+      cryptoType: "BTC",
       amount: "",
     },
     validationSchema: Yup.object({
@@ -211,7 +215,8 @@ const CombinedForm = () => {
       <TextInput
         label="申し込み権利数"
         name="participantCount"
-        value={formik.values.participantCount as unknown as string}
+        type="number"
+        value={formik.values.participantCount as unknown as number}
         onChange={formik.handleChange}
         required
         need
@@ -258,10 +263,7 @@ const CombinedForm = () => {
               : "border-gray-300"
           }`}
         >
-          <option value="" className="text-[14px]">
-            選択してください
-          </option>
-          <option value="BTC" className="text-[14px]">
+          <option value="BTC" defaultChecked className="text-[14px]">
             ビットコイン (BTC)
           </option>
           <option value="ETH" className="text-[14px]">
@@ -354,7 +356,7 @@ const TrackingTokenPrice = ({
   currency,
   usdPrice,
   jpyPice,
-  currentTime
+  currentTime,
 }: TrackingTokenPriceProps) => {
   const calcJPYPrice = useMemo(() => usdPrice * jpyPice, [usdPrice, jpyPice]);
 
