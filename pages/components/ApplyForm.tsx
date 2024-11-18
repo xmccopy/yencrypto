@@ -9,6 +9,7 @@ interface TrackingTokenPriceProps {
   currency: string;
   usdPrice: number;
   jpyPice: number;
+  currentTime: string;
 }
 
 const CombinedForm = () => {
@@ -17,6 +18,16 @@ const CombinedForm = () => {
   const [jpyPice, setJPYPrice] = useState(0);
   const [calcPrice1, setCalcPrice1] = useState(0);
   const [calcPrice2, setCalcPrice2] = useState(0);
+  const [currentTime, setCurrentTime] = useState("");
+
+  const updateTime = () => {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    setCurrentTime(`${hours}:${minutes}:${seconds}`);
+  };
 
   const currency = useMemo(() => {
     if (!tokenType || tokenType === "LTC") return "USDT";
@@ -35,6 +46,7 @@ const CombinedForm = () => {
         throw new Error("Network response was not ok");
       }
       const result = await response.json();
+      updateTime();
       setPrice(Number(Number(result?.price).toFixed(0)) || 0);
     } else {
       setPrice(1);
@@ -49,6 +61,7 @@ const CombinedForm = () => {
       throw new Error("Network response was not ok");
     }
     const data = await response.json();
+    updateTime();
     setJPYPrice(Number(Number(data.rates.JPY).toFixed(0)));
   };
 
@@ -322,6 +335,7 @@ const CombinedForm = () => {
         currency={currency}
         usdPrice={usdPrice}
         jpyPice={jpyPice}
+        currentTime={currentTime}
       />
 
       <div className="flex justify-center">
@@ -340,6 +354,7 @@ const TrackingTokenPrice = ({
   currency,
   usdPrice,
   jpyPice,
+  currentTime
 }: TrackingTokenPriceProps) => {
   const calcJPYPrice = useMemo(() => usdPrice * jpyPice, [usdPrice, jpyPice]);
 
@@ -348,33 +363,9 @@ const TrackingTokenPrice = ({
       <p>
         1 {currency} = ¥{calcJPYPrice}
       </p>
-      <CountdownTimer />
+      <p>【レート取得時刻】{currentTime}</p>
     </div>
   );
-};
-
-const CountdownTimer = () => {
-  const [currentTime, setCurrentTime] = useState("");
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const hours = String(now.getHours()).padStart(2, "0");
-      const minutes = String(now.getMinutes()).padStart(2, "0");
-      const seconds = String(now.getSeconds()).padStart(2, "0");
-
-      // Format the time as HH:MM:SS
-      setCurrentTime(`${hours}:${minutes}:${seconds}`);
-    };
-
-    // Update time immediately and then every second
-    updateTime();
-    const intervalId = setInterval(updateTime, 1000);
-
-    return () => clearInterval(intervalId); // Cleanup on unmount
-  }, []);
-
-  return <p>【レート取得時刻】{currentTime}</p>;
 };
 
 export default CombinedForm;
