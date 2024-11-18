@@ -26,16 +26,16 @@ const CombinedForm = () => {
   const handleGetPrice = async (token: string) => {
     if (token === "BTC" || token === "ETH") {
       const response = await fetch(
-        `https://min-api.cryptocompare.com/data/price?fsym=${
-          token || "BTC"
-        }&tsyms=USD`
+        `https://api.binance.com/api/v3/ticker/price?symbol=${
+          token ? token + "USDT" : "BTCUSDT"
+        }`
       );
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const result = await response.json();
-      setPrice(Number(Number(result?.USD).toFixed(0)) || 0);
+      setPrice(Number(Number(result?.price).toFixed(0)) || 0);
     } else {
       setPrice(1);
     }
@@ -336,7 +336,11 @@ const CombinedForm = () => {
   );
 };
 
-const TrackingTokenPrice = ({ currency, usdPrice, jpyPice }: TrackingTokenPriceProps) => {
+const TrackingTokenPrice = ({
+  currency,
+  usdPrice,
+  jpyPice,
+}: TrackingTokenPriceProps) => {
   const calcJPYPrice = useMemo(() => usdPrice * jpyPice, [usdPrice, jpyPice]);
 
   return (
