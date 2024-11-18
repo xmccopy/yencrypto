@@ -24,8 +24,8 @@ const TextInput: React.FC<TextInputProps> = ({
   type = "text",
 }) => {
   return (
-    <div className="mb-4 p-4 bg-gray-300">
-      <label htmlFor={name} className="font-bold text-[14px]">
+    <div className="px-[32px] py-[24px] bg-[#F3F3F3] rounded-[16px]">
+      <label htmlFor={name} className="font-bold text-[14px] text-[#212121]">
         {label}
         {required && <span className="text-red-500 text-[10px]"> ※必須</span>}
       </label>
@@ -36,11 +36,15 @@ const TextInput: React.FC<TextInputProps> = ({
           type={type}
           value={value}
           onChange={onChange}
-          className={`mt-1 block py-1 px-2 border border-gray-400 rounded-md ${
-            error ? "border-red-500" : "border-gray-300"
+          className={`mt-1 block py-1 w-full px-2  text-[#212121] bg-[#FEFEFE] rounded-lg ${
+            error ? "border border-red-500" : "border border-[#185F03]"
           }`}
         />
-        <label>{need && <span className="text-[14px]">権利</span>}</label>
+        {need && (
+          <label className="w-[35px]">
+            <span className="text-[14px] text-[#212121]">権利</span>
+          </label>
+        )}
       </div>
       {error && <div className="text-red-500 mt-1">{error}</div>}
     </div>

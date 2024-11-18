@@ -180,12 +180,12 @@ const CombinedForm = () => {
         }
       />
 
-      <div className="mb-4 p-4 bg-gray-300">
-        <label className="font-bold text-[14px]">
+      <div className="bg-[#F3F3F3] rounded-[16px] px-[32px] py-[24px]">
+        <label className="font-bold text-[14px] text-[#212121]">
           申し込みプラン<span className="text-red-500 text-[10px]"> ※必須</span>
         </label>
         <div className="mt-1">
-          <label className="mr-4">
+          <label className="mr-4 text-[#212121]">
             <input
               type="radio"
               name="applicationType"
@@ -194,7 +194,7 @@ const CombinedForm = () => {
             />
             スポーツデータイム
           </label>
-          <label>
+          <label className="text-[#212121]">
             <input
               type="radio"
               name="applicationType"
@@ -204,7 +204,7 @@ const CombinedForm = () => {
             ライトプラン
           </label>
         </div>
-        <label className="text-[10px] font-light">
+        <label className="text-[10px] font-light text-[#212121]">
           ※ライトプランは、初回お申し込みのお客様のみ選択可能です。
         </label>
         {formik.touched.applicationType && formik.errors.applicationType ? (
@@ -246,8 +246,8 @@ const CombinedForm = () => {
       <h2 className="mt-6 text-[12px] font-light">
         ご入金時にご利用いただく仮想通貨をご選択ください。
       </h2>
-      <div className="mb-4 p-4 bg-gray-300">
-        <label htmlFor="cryptoType" className="block text-[14px] font-semibold">
+      <div className="bg-[#F3F3F3] rounded-[16px] px-[32px] py-[24px]">
+        <label htmlFor="cryptoType" className="block text-[14px] font-semibold text-[#212121]">
           仮想通貨
         </label>
         <select
@@ -259,19 +259,19 @@ const CombinedForm = () => {
             setTokenType(e.target.value);
             formik.handleChange(e);
           }}
-          className={`mt-2 block w-full p-2 border rounded-md text-[14px] ${
+          className={`mt-2 block w-full p-2 border rounded-lg text-[14px] text-[#212121] ${
             formik.touched.cryptoType && formik.errors.cryptoType
               ? "border-red-500"
-              : "border-gray-300"
+              : "border-[#185F03]"
           }`}
         >
-          <option value="BTC" defaultChecked className="text-[14px]">
+          <option value="BTC" defaultChecked className="text-[14px] text-[#212121]">
             ビットコイン (BTC)
           </option>
-          <option value="ETH" className="text-[14px]">
+          <option value="ETH" className="text-[14px] text-[#212121]">
             イーサリアム (ETH)
           </option>
-          <option value="LTC" className="text-[14px]">
+          <option value="LTC" className="text-[14px] text-[#212121]">
             テザー (USDT)
           </option>
         </select>
@@ -285,12 +285,12 @@ const CombinedForm = () => {
           の市場レートで計算されます。
         </label>
       </div>
-      <div className="mb-4 p-4 bg-gray-300">
-        <label className="text-[12px] font-semibold">仮想通貨数量を計算</label>
-        <label className="mt-3 block text-[12px] font-semibold">
+      <div className="bg-[#F3F3F3] rounded-[16px] px-[32px] py-[24px]">
+        <label className="text-[12px] font-semibold text-[#212121]">仮想通貨数量を計算</label>
+        <label className="mt-3 block text-[12px] font-semibold text-[#212121]">
           日本円入金額を入力
         </label>
-        <div className="flex flex-row gap-1 items-center mt-2">
+        <div className="flex flex-row gap-2 items-center mt-2">
           <NumericFormat
             id="numberInput"
             thousandSeparator={true}
@@ -301,13 +301,13 @@ const CombinedForm = () => {
               const { value } = values;
               setJpyValue(value);
             }}
-            className={`block w-full p-2 border rounded-md text-[14px] ${
+            className={`block w-full p-2 border rounded-md text-[14px] text-[#212121] ${
               formik.touched.amount && formik.errors.amount
                 ? "border-red-500"
-                : "border-gray-300"
+                : "border-[#185F03]"
             }`}
           />
-          <span>円</span>
+          <span className="text-[#212121]">円</span>
         </div>
         {formik.touched.amount && formik.errors.amount ? (
           <div className="text-red-500 mt-1">{formik.errors.amount}</div>
@@ -316,14 +316,14 @@ const CombinedForm = () => {
         <div className="flex items-center gap-2 mt-4 ">
           <button
             type="button"
-            className="py-1 px-4 bg-gradient-to-r from-[#c27070] to-[#0dad0d] p-10 text-white rounded-full text-[12px]"
+            className="py-1 px-4 font-semibold bg-gradient-to-r from-[#DBDE7D] to-[#FF7B7B] p-10 text-[#185F03] rounded-full text-[14px]"
             onClick={handleCalc}
           >
             計算する
           </button>
         </div>
 
-        <label className="mt-3 block text-[10px] font-light">
+        <label className="mt-3 block text-[10px] font-light text-[#212121]">
           ※日本円入金額を入力し、計算するボタンを押してください。
         </label>
 
@@ -333,7 +333,7 @@ const CombinedForm = () => {
           </p>
         ) : null}
 
-        <label className="mt-3 block text-[12px] font-light">
+        <label className="mt-3 block text-[12px] font-light text-[#212121]">
           仮想通貨入金額は、お客様が申し込み手続きされた時点の市場
           レートで計算されます。
         </label>
