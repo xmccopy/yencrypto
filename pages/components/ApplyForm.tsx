@@ -1,11 +1,15 @@
-// components/CombinedForm.tsx
-
 "use client";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import TextInput from "./TextInput";
 import { useEffect, useMemo, useState } from "react";
+
+interface TrackingTokenPriceProps {
+  currency: string;
+  usdPrice: number;
+  jpyPice: number;
+}
 
 const CombinedForm = () => {
   const [tokenType, setTokenType] = useState("");
@@ -332,13 +336,13 @@ const CombinedForm = () => {
   );
 };
 
-const TrackingTokenPrice = ({ currency, usdPrice, jpyPice }: any) => {
+const TrackingTokenPrice = ({ currency, usdPrice, jpyPice }: TrackingTokenPriceProps) => {
   const calcJPYPrice = useMemo(() => usdPrice * jpyPice, [usdPrice, jpyPice]);
 
   return (
     <div className="mt-4 text-[12px] font-light">
       <p>
-        【例】1 {currency} = ¥{calcJPYPrice}
+        1 {currency} = ¥{calcJPYPrice}
       </p>
       <CountdownTimer />
     </div>
