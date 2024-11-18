@@ -340,9 +340,33 @@ const TrackingTokenPrice = ({ currency, usdPrice, jpyPice }: any) => {
       <p>
         【例】1 {currency} = ¥{calcJPYPrice}
       </p>
-      <p>【レート取得時刻】11:22:59</p>
+      <CountdownTimer />
     </div>
   );
+};
+
+const CountdownTimer = () => {
+  const [currentTime, setCurrentTime] = useState("");
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      const seconds = String(now.getSeconds()).padStart(2, "0");
+
+      // Format the time as HH:MM:SS
+      setCurrentTime(`${hours}:${minutes}:${seconds}`);
+    };
+
+    // Update time immediately and then every second
+    updateTime();
+    const intervalId = setInterval(updateTime, 1000);
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, []);
+
+  return <p>【レート取得時刻】{currentTime}</p>;
 };
 
 export default CombinedForm;
