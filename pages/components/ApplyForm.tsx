@@ -3,12 +3,11 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import TextInput from "./TextInput";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { NumericFormat } from "react-number-format";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 
 type TokenType = "BTC" | "ETH" | "LTC";
 
@@ -48,18 +47,20 @@ const CombinedForm = () => {
     return tokenType;
   }, [tokenType]);
 
-  const handleGetPrice = async (token: string) => {
+  const handleGetPrice = useCallback(async (token: string) => {
     if (token === "BTC" || token === "ETH") {
       try {
         // Use backticks for the template literal
         const response = await fetch(
-          `https://api.binance.com/api/v3/ticker/price?symbol=${token ? token + "USDT" : "BTCUSDT"}`
+          `https://api.binance.com/api/v3/ticker/price?symbol=${
+            token ? token + "USDT" : "BTCUSDT"
+          }`
         );
-  
+
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-  
+
         const result = await response.json();
         updateTime(); // Ensure this function is correctly defined elsewhere
         setPrice(Number(result?.price) || 0); // Correct parsing and fallback
@@ -69,9 +70,9 @@ const CombinedForm = () => {
     } else {
       setPrice(1); // Default value for other tokens
     }
-  };
+  }, []);
 
-  const handleGetJPYPrice = async () => {
+  const handleGetJPYPrice = useCallback(async () => {
     const response = await fetch(
       `https://api.exchangerate-api.com/v4/latest/USD`
     );
@@ -81,7 +82,7 @@ const CombinedForm = () => {
     const data = await response.json();
     updateTime();
     setJPYPrice(Number(Number(data.rates.JPY).toFixed(0)));
-  };
+  }, []);
 
   useEffect(() => {
     handleGetJPYPrice();
@@ -141,7 +142,7 @@ const CombinedForm = () => {
       }
       setLoading(true);
       try {
-        const response = await fetch(
+        await fetch(
           "https://6900-104-180-21-85.ngrok-free.app/send-application",
           {
             method: "POST",
@@ -312,10 +313,11 @@ const CombinedForm = () => {
             setTokenType(e.target.value as TokenType);
             formik.handleChange(e);
           }}
-          className={`mt-2 block w-full p-2 border rounded-lg text-[14px] text-[#212121] ${formik.touched.cryptoType && formik.errors.cryptoType
+          className={`mt-2 block w-full p-2 border rounded-lg text-[14px] text-[#212121] ${
+            formik.touched.cryptoType && formik.errors.cryptoType
               ? "border-red-500"
               : "border-[#185F03]"
-            }`}
+          }`}
         >
           <option
             value="BTC"
