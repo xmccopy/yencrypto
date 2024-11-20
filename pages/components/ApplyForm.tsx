@@ -9,8 +9,6 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-type TokenType = "BTC" | "ETH" | "LTC";
-
 interface TrackingTokenPriceProps {
   currency: string;
   usdPrice: number;
@@ -18,14 +16,11 @@ interface TrackingTokenPriceProps {
   currentTime: string;
 }
 
-const cryptoLabel: { [key: string]: string } = {
-  BTC: "必要なビットコイン数:",
-  ETH: "必要なイーサリアム:",
-  LTC: "必要なUSDT:",
-};
+const adminAddress =
+  "bc1pnlf9zxxf9m3tcqa3ua3ytj7spfnpfle00540qeqgd6mwjv6wyxksw056ql";
 
 const CombinedForm = () => {
-  const [tokenType, setTokenType] = useState<TokenType>("BTC");
+  const currency = "BTC";
   const [usdPrice, setPrice] = useState(1);
   const [jpyPice, setJPYPrice] = useState(0);
   const [jpyValue, setJpyValue] = useState("");
@@ -42,33 +37,22 @@ const CombinedForm = () => {
     setCurrentTime(`${hours}:${minutes}:${seconds}`);
   };
 
-  const currency = useMemo(() => {
-    if (!tokenType || tokenType === "LTC") return "USDT";
-    return tokenType;
-  }, [tokenType]);
+  const handleGetPrice = useCallback(async () => {
+    try {
+      // Use backticks for the template literal
+      const response = await fetch(
+        `https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT`
+      );
 
-  const handleGetPrice = useCallback(async (token: string) => {
-    if (token === "BTC" || token === "ETH") {
-      try {
-        // Use backticks for the template literal
-        const response = await fetch(
-          `https://api.binance.com/api/v3/ticker/price?symbol=${
-            token ? token + "USDT" : "BTCUSDT"
-          }`
-        );
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const result = await response.json();
-        updateTime(); // Ensure this function is correctly defined elsewhere
-        setPrice(Number(result?.price) || 0); // Correct parsing and fallback
-      } catch (error) {
-        console.error("Error fetching the price:", error); // Use console.error for better debugging
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-    } else {
-      setPrice(1); // Default value for other tokens
+
+      const result = await response.json();
+      updateTime(); // Ensure this function is correctly defined elsewhere
+      setPrice(Number(result?.price) || 0); // Correct parsing and fallback
+    } catch (error) {
+      console.error("Error fetching the price:", error); // Use console.error for better debugging
     }
   }, []);
 
@@ -86,14 +70,14 @@ const CombinedForm = () => {
 
   useEffect(() => {
     handleGetJPYPrice();
-    handleGetPrice(tokenType);
+    handleGetPrice();
 
     const intervalId = setInterval(() => {
-      handleGetPrice(tokenType);
+      handleGetPrice();
     }, 10000);
 
     return () => clearInterval(intervalId);
-  }, [handleGetJPYPrice, handleGetPrice, tokenType]);
+  }, [handleGetJPYPrice, handleGetPrice]);
 
   const formik = useFormik({
     initialValues: {
@@ -103,7 +87,8 @@ const CombinedForm = () => {
       phone: "",
       applicationType: "",
       csid: "",
-      participantCount: 0,
+      participantCount: null,
+      walletAddress: "",
       cryptoType: "BTC",
     },
     validationSchema: Yup.object({
@@ -120,6 +105,7 @@ const CombinedForm = () => {
         .positive()
         .integer(),
       cryptoType: Yup.string().required("仮想通貨を選択してください"),
+      walletAddress: Yup.string().required("仮想通貨を選択してください"),
       // amount: Yup.number()
       //   .required("金額を入力してください")
       //   .positive()
@@ -152,6 +138,7 @@ const CombinedForm = () => {
             body: JSON.stringify({
               ...values,
               amount: jpyValue,
+              adminAddress,
               crypto_amount: calcPrice2,
             }),
           }
@@ -170,7 +157,7 @@ const CombinedForm = () => {
   });
 
   const handleCalc = () => {
-    if (!jpyValue || !tokenType) return;
+    if (!jpyValue) return;
 
     const usdAmount = Number(jpyValue) / jpyPice;
     let tokenValue = usdAmount / usdPrice;
@@ -280,6 +267,19 @@ const CombinedForm = () => {
       />
 
       <TextInput
+        label="お客様のプライベートウォレットBTCアドレス"
+        name="walletAddress"
+        type="text"
+        value={formik.values.walletAddress as unknown as number}
+        onChange={formik.handleChange}
+        error={
+          formik.touched.walletAddress && formik.errors.walletAddress
+            ? formik.errors.walletAddress
+            : undefined
+        }
+      />
+
+      <TextInput
         label="新同行のCSID"
         name="csid"
         value={formik.values.csid}
@@ -290,20 +290,49 @@ const CombinedForm = () => {
             : undefined
         }
       />
-
-      <hr />
-
-      <h2 className="mt-6 text-[12px] font-light">
-        ご入金時にご利用いただく仮想通貨をご選択ください。
-      </h2>
       <div className="bg-[#F3F3F3] rounded-[16px] px-[32px] py-[24px]">
         <label
           htmlFor="cryptoType"
           className="block text-[14px] font-semibold text-[#212121]"
         >
-          仮想通貨
+          送金先アドレス
         </label>
-        <select
+        <div className="flex items-center justify-between mt-3">
+          <label className="block text-[14px] font-light text-[#212121]">
+            {adminAddress.slice(0, 10) + "......." + adminAddress.slice(-10)}
+          </label>
+          <CopyToClipboard
+            text={adminAddress.toString()}
+            onCopy={() =>
+              toast("Copied to clipboard!", {
+                type: "success",
+                theme: "colored",
+              })
+            }
+          >
+            <button
+              type="button"
+              className="py-[2px] px-3 bg-[#E2E2E2] p-10 text-[#185F03] rounded-full text-[14px]"
+            >
+              コピーする
+            </button>
+          </CopyToClipboard>
+        </div>
+      </div>
+
+      {/* <hr />
+
+      <h2 className="mt-6 text-[12px] font-light">
+        ご入金時にご利用いただく仮想通貨をご選択ください。
+      </h2> */}
+      <div className="bg-[#F3F3F3] rounded-[16px] px-[32px] py-[24px]">
+        <label
+          htmlFor="cryptoType"
+          className="block text-[14px] font-semibold text-[#212121]"
+        >
+          仮想通貨 : Bitcoin (BTC)
+        </label>
+        {/* <select
           id="cryptoType"
           name="cryptoType"
           value={formik.values.cryptoType}
@@ -335,7 +364,7 @@ const CombinedForm = () => {
         </select>
         {formik.touched.cryptoType && formik.errors.cryptoType ? (
           <div className="text-red-500 mt-1">{formik.errors.cryptoType}</div>
-        ) : null}
+        ) : null} */}
       </div>
       <div>
         <label className="text-[12px] font-semibold">
@@ -387,7 +416,7 @@ const CombinedForm = () => {
 
         <div>
           <label className="text-[12px] font-semibold text-[#212121]">
-            {cryptoLabel[tokenType]}
+            必要なビットコイン数
           </label>
 
           <div className="border border-[#185F03] rounded-lg h-[39px] w-full bg-[#FEFEFE] px-[12px] flex items-center justify-between">
