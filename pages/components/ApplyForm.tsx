@@ -77,7 +77,7 @@ const CombinedForm = () => {
     }, 60000);
 
     return () => clearInterval(intervalId);
-  }, [handleGetJPYPrice]);
+  }, [handleGetJPYPrice, handleGetPrice]);
 
   const formik = useFormik({
     initialValues: {

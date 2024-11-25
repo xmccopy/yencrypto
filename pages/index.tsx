@@ -1,4 +1,3 @@
-import Logo from "./components/Logo";
 import Title from "./components/Title";
 import ApplyForm from "./components/ApplyForm";
 import Container from "./components/Container";
