@@ -16,8 +16,15 @@ interface TrackingTokenPriceProps {
   currentTime: string;
 }
 
-const adminAddress =
-  "bc1pnlf9zxxf9m3tcqa3ua3ytj7spfnpfle00540qeqgd6mwjv6wyxksw056ql";
+const adminAddress = "bc1qsdt43n78g6hscvzgp4cjrs2j2sjx5zpufrq09p";
+
+const formatNumber = (number: number) => {
+  const formattedNumber = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(number);
+  return formattedNumber;
+};
 
 const CombinedForm = () => {
   const currency = "BTC";
@@ -44,10 +51,6 @@ const CombinedForm = () => {
         `https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT`
       );
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
       const result = await response.json();
       updateTime(); // Ensure this function is correctly defined elsewhere
       setPrice(Number(result?.price) || 0); // Correct parsing and fallback
@@ -60,9 +63,6 @@ const CombinedForm = () => {
     const response = await fetch(
       `https://api.exchangerate-api.com/v4/latest/USD`
     );
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
     const data = await response.json();
     updateTime();
     setJPYPrice(Number(Number(data.rates.JPY).toFixed(0)));
@@ -74,10 +74,10 @@ const CombinedForm = () => {
 
     const intervalId = setInterval(() => {
       handleGetPrice();
-    }, 10000);
+    }, 60000);
 
     return () => clearInterval(intervalId);
-  }, [handleGetJPYPrice, handleGetPrice]);
+  }, [handleGetJPYPrice]);
 
   const formik = useFormik({
     initialValues: {
@@ -93,19 +93,18 @@ const CombinedForm = () => {
     },
     validationSchema: Yup.object({
       firstName: Yup.string().required("氏名は必須です"),
-      lastName: Yup.string().required("姓は必須です"),
+      lastName: Yup.string().required("氏名（カナ）は必須です"),
       email: Yup.string()
         .email("無効なメールアドレスです")
         .required("メールアドレスは必須です"),
       phone: Yup.string().required("電話番号は必須です"),
       applicationType: Yup.string().required("申し込みプランは必須です"),
-      csid: Yup.string().required("CSIDは必須です"),
+      csid: Yup.string().required("ここは必須ではなく、任意項目になります。"),
       participantCount: Yup.number()
         .required("申し込み権利数は必須です")
-        .positive()
-        .integer(),
+        .positive(),
       cryptoType: Yup.string().required("仮想通貨を選択してください"),
-      walletAddress: Yup.string().required("仮想通貨を選択してください"),
+      walletAddress: Yup.string().required("プライベートウォレットアドレスは必須です"),
       // amount: Yup.number()
       //   .required("金額を入力してください")
       //   .positive()
@@ -182,7 +181,7 @@ const CombinedForm = () => {
       />
 
       <TextInput
-        label="姓（カナ）"
+        label="氏名（カナ）"
         name="lastName"
         value={formik.values.lastName}
         onChange={formik.handleChange}
@@ -229,7 +228,7 @@ const CombinedForm = () => {
               value="individual"
               onChange={formik.handleChange}
             />
-            スポーツデータイム
+            スタンダードプラン
           </label>
           <label className="text-[#212121]">
             <input
@@ -266,21 +265,48 @@ const CombinedForm = () => {
         }
       />
 
-      <TextInput
-        label="お客様のプライベートウォレットBTCアドレス"
-        name="walletAddress"
-        type="text"
-        value={formik.values.walletAddress as unknown as number}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.walletAddress && formik.errors.walletAddress
-            ? formik.errors.walletAddress
-            : undefined
-        }
-      />
+      <div className="px-[32px] py-[24px] bg-[#F3F3F3] rounded-[16px]">
+        <div className="flex flex-col gap-3">
+          <label
+            htmlFor="walletAddress"
+            className="font-bold text-[14px] text-[#212121]"
+          >
+            【配当受取用】
+          </label>
+          <label
+            htmlFor="walletAddress"
+            className="font-bold text-[14px] text-[#212121]"
+          >
+            お客様のプライベートウォレットBTCアドレス
+          </label>
+        </div>
+        <div className="flex flex-row gap-2 w-full items-center">
+          <input
+            id="walletAddress"
+            name="walletAddress"
+            type="text"
+            value={formik.values.walletAddress as unknown as number}
+            onChange={formik.handleChange}
+            className={`mt-1 block py-1 w-full px-2  text-[#212121] bg-[#FEFEFE] rounded-lg ${
+              (
+                formik.touched.walletAddress && formik.errors.walletAddress
+                  ? formik.errors.walletAddress
+                  : undefined
+              )
+                ? "border border-red-500"
+                : "border border-[#185F03]"
+            }`}
+          />
+        </div>
+        {(formik.touched.walletAddress && formik.errors.walletAddress
+          ? formik.errors.walletAddress
+          : undefined) && (
+          <div className="text-red-500 mt-1">{formik.errors.walletAddress}</div>
+        )}
+      </div>
 
       <TextInput
-        label="新同行のCSID"
+        label="紹介者のCSID"
         name="csid"
         value={formik.values.csid}
         onChange={formik.handleChange}
@@ -295,11 +321,12 @@ const CombinedForm = () => {
           htmlFor="cryptoType"
           className="block text-[14px] font-semibold text-[#212121]"
         >
-          送金先アドレス
+          BTC送金先アドレス
         </label>
         <div className="flex items-center justify-between mt-3">
           <label className="block text-[14px] font-light text-[#212121]">
-            {adminAddress.slice(0, 10) + "......." + adminAddress.slice(-10)}
+            {/* {adminAddress.slice(0, 10) + "......." + adminAddress.slice(-10)} */}
+            {adminAddress}
           </label>
           <CopyToClipboard
             text={adminAddress.toString()}
@@ -320,56 +347,9 @@ const CombinedForm = () => {
         </div>
       </div>
 
-      {/* <hr />
-
-      <h2 className="mt-6 text-[12px] font-light">
-        ご入金時にご利用いただく仮想通貨をご選択ください。
-      </h2> */}
-      <div className="bg-[#F3F3F3] rounded-[16px] px-[32px] py-[24px]">
-        <label
-          htmlFor="cryptoType"
-          className="block text-[14px] font-semibold text-[#212121]"
-        >
-          仮想通貨 : Bitcoin (BTC)
-        </label>
-        {/* <select
-          id="cryptoType"
-          name="cryptoType"
-          value={formik.values.cryptoType}
-          onChange={(e) => {
-            setJpyValue("0");
-            setCalcPrice2(0);
-            setTokenType(e.target.value as TokenType);
-            formik.handleChange(e);
-          }}
-          className={`mt-2 block w-full p-2 border rounded-lg text-[14px] text-[#212121] ${
-            formik.touched.cryptoType && formik.errors.cryptoType
-              ? "border-red-500"
-              : "border-[#185F03]"
-          }`}
-        >
-          <option
-            value="BTC"
-            defaultChecked
-            className="text-[14px] text-[#212121]"
-          >
-            ビットコイン (BTC)
-          </option>
-          <option value="ETH" className="text-[14px] text-[#212121]">
-            イーサリアム (ETH)
-          </option>
-          <option value="LTC" className="text-[14px] text-[#212121]">
-            テザー (USDT)
-          </option>
-        </select>
-        {formik.touched.cryptoType && formik.errors.cryptoType ? (
-          <div className="text-red-500 mt-1">{formik.errors.cryptoType}</div>
-        ) : null} */}
-      </div>
       <div>
         <label className="text-[12px] font-semibold">
-          仮想通貨入金額は、お客様が申し込み手続きをされた時点
-          の市場レートで計算されます。
+          以下に表示されるBTC数量は、お客様が申し込み手続きをされた時点の市場レートで計算されています。
         </label>
       </div>
       <div className="bg-[#F3F3F3] rounded-[16px] px-[32px] py-[24px]">
@@ -441,11 +421,6 @@ const CombinedForm = () => {
             </CopyToClipboard>
           </div>
         </div>
-
-        <label className="mt-3 block text-[12px] font-light text-[#212121]">
-          仮想通貨入金額は、お客様が申し込み手続きされた時点の市場
-          レートで計算されます。
-        </label>
       </div>
 
       <TrackingTokenPrice
@@ -498,7 +473,7 @@ const TrackingTokenPrice = ({
   return (
     <div className="mt-4 text-[12px] font-light">
       <p>
-        1 {currency} = ¥{calcJPYPrice}
+        1 {currency} = ¥{formatNumber(calcJPYPrice)}
       </p>
       <p>【レート取得時刻】{currentTime}</p>
     </div>

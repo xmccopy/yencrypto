@@ -8,14 +8,14 @@ export default function Home() {
   return (
     <>
       <Container>
-        <div className="border py-4 px-8 my-4">
+        <div className="border py-8 px-8 my-4 bg-[#FFFFFF] rounded-[16px]">
           <Logo />
           <div className="my-4">
             <Title title="申し込みフォーム" />
           </div>
           <p className="text-[12px] font-light mb-4">
-            下記のフォームをご入力いただき、ご入金時の仮想通貨をご選択
-            ください。ご入金時の仮想通貨送金数量は、以下の表示数量とな ります。
+            下記のフォームをご入力ください。ご入金時のBTC数量は、以
+            下に表示される数量となります
           </p>
           <ApplyForm />
           <a href="#" className="mt-14 block underline">
