@@ -104,7 +104,9 @@ const CombinedForm = () => {
         .required("申し込み権利数は必須です")
         .positive(),
       cryptoType: Yup.string().required("仮想通貨を選択してください"),
-      walletAddress: Yup.string().required("プライベートウォレットアドレスは必須です"),
+      walletAddress: Yup.string().required(
+        "プライベートウォレットアドレスは必須です"
+      ),
       // amount: Yup.number()
       //   .required("金額を入力してください")
       //   .positive()
@@ -216,7 +218,7 @@ const CombinedForm = () => {
         }
       />
 
-      <div className="bg-[#F3F3F3] rounded-[16px] px-[32px] py-[24px]">
+      <div className="bg-[#F3F3F3] rounded-[16px] px-4 md:px-[32px] py-4 md:py-[24px]">
         <label className="font-bold text-[14px] text-[#212121]">
           申し込みプラン<span className="text-red-500 text-[10px]"> ※必須</span>
         </label>
@@ -265,7 +267,7 @@ const CombinedForm = () => {
         }
       />
 
-      <div className="px-[32px] py-[24px] bg-[#F3F3F3] rounded-[16px]">
+      <div className="px-4 md:px-[32px] py-4 md:py-[24px] bg-[#F3F3F3] rounded-[16px]">
         <div className="flex flex-col gap-3">
           <label
             htmlFor="walletAddress"
@@ -316,7 +318,7 @@ const CombinedForm = () => {
             : undefined
         }
       />
-      <div className="bg-[#F3F3F3] rounded-[16px] px-[32px] py-[24px]">
+      <div className="bg-[#F3F3F3] rounded-[16px] px-4 md:px-[32px] py-4 md:py-[24px]">
         <label
           htmlFor="cryptoType"
           className="block text-[14px] font-semibold text-[#212121]"
@@ -324,9 +326,11 @@ const CombinedForm = () => {
           BTC送金先アドレス
         </label>
         <div className="flex items-center justify-between mt-3">
-          <label className="block text-[14px] font-light text-[#212121]">
-            {/* {adminAddress.slice(0, 10) + "......." + adminAddress.slice(-10)} */}
+          <label className="hidden md:block text-[14px] font-light text-[#212121]">
             {adminAddress}
+          </label>
+          <label className="block md:hidden text-[14px] font-light text-[#212121]">
+            {adminAddress.slice(0, 13) + "......." + adminAddress.slice(-10)}
           </label>
           <CopyToClipboard
             text={adminAddress.toString()}
@@ -352,7 +356,7 @@ const CombinedForm = () => {
           以下に表示されるBTC数量は、お客様が申し込み手続きをされた時点の市場レートで計算されています。
         </label>
       </div>
-      <div className="bg-[#F3F3F3] rounded-[16px] px-[32px] py-[24px]">
+      <div className="bg-[#F3F3F3] rounded-[16px] px-4 md:px-[32px] py-4 md:py-[24px]">
         <label className="text-[12px] font-semibold text-[#212121]">
           仮想通貨数量を計算
         </label>

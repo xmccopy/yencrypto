@@ -24,7 +24,7 @@ const TextInput: React.FC<TextInputProps> = ({
   type = "text",
 }) => {
   return (
-    <div className="px-[32px] py-[24px] bg-[#F3F3F3] rounded-[16px]">
+    <div className="px-4 md:px-[32px] py-4 md:py-[24px] bg-[#F3F3F3] rounded-[16px]">
       <label htmlFor={name} className="font-bold text-[14px] text-[#212121]">
         {label}
         {required && <span className="text-red-500 text-[10px]"> ※必須</span>}

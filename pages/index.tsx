@@ -2,15 +2,16 @@ import Logo from "./components/Logo";
 import Title from "./components/Title";
 import ApplyForm from "./components/ApplyForm";
 import Container from "./components/Container";
+import HeaderComponent from "./components/Header";
 import { GoLinkExternal } from "react-icons/go";
 
 export default function Home() {
   return (
     <>
+      <HeaderComponent />
       <Container>
-        <div className="border py-8 px-8 my-4 bg-[#FFFFFF] rounded-[16px]">
-          <Logo />
-          <div className="my-4">
+        <div className="border py-8 px-5 md:px-8 my-4 bg-[#FFFFFF] rounded-[16px]">
+          <div className="mb-4">
             <Title title="申し込みフォーム" />
           </div>
           <p className="text-[12px] font-light mb-4">
