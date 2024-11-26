@@ -99,7 +99,7 @@ const CombinedForm = () => {
         .required("メールアドレスは必須です"),
       phone: Yup.string().required("電話番号は必須です"),
       applicationType: Yup.string().required("申し込みプランは必須です"),
-      csid: Yup.string().required("ここは必須ではなく、任意項目になります。"),
+      csid: Yup.string().optional(),
       participantCount: Yup.number()
         .required("申し込み権利数は必須です")
         .positive(),

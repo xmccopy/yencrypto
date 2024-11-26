@@ -5,7 +5,7 @@ export default function Document() {
     <Html lang="en">
       <Head>
         <title>MASTER FUND</title>
-        <link rel="shortcut icon" href="/logo.png" />
+        <link rel="shortcut icon" href="/favicon.jpg" />
       </Head>
       <body className="antialiased">
         <Main />
