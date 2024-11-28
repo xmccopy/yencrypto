@@ -8,7 +8,7 @@ const Title: React.FC<TitleProps> = ({
     title
 }) => {
     return (
-        <h1 className="font-bold">{title}</h1>
+        <h1 className="font-bold text-center">{title}</h1>
     )
 }
 

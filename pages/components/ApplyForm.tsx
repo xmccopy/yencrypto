@@ -35,6 +35,11 @@ const CombinedForm = () => {
   const [calcPrice2, setCalcPrice2] = useState(0);
   const [currentTime, setCurrentTime] = useState("");
 
+  const btcAmount = useMemo(() => {
+    if (Number(calcPrice2) > 0) return Number(calcPrice2.toFixed(8));
+    return calcPrice2;
+  }, [calcPrice2]);
+
   const updateTime = () => {
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, "0");
@@ -400,15 +405,15 @@ const CombinedForm = () => {
 
         <div>
           <label className="text-[12px] font-semibold text-[#212121]">
-            必要なビットコイン数
+            必要なBTC数量
           </label>
 
           <div className="border border-[#185F03] rounded-lg h-[39px] w-full bg-[#FEFEFE] px-[12px] flex items-center justify-between">
             <p className="text-[12px] text-[#212121] font-semibold">
-              {calcPrice2}
+              {btcAmount}
             </p>
             <CopyToClipboard
-              text={calcPrice2.toString()}
+              text={btcAmount.toString()}
               onCopy={() =>
                 toast("Copied to clipboard!", {
                   type: "success",
