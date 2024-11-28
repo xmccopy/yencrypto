@@ -60,7 +60,7 @@ const CombinedForm = () => {
       updateTime(); // Ensure this function is correctly defined elsewhere
       setPrice(Number(result?.price) || 0); // Correct parsing and fallback
     } catch (error) {
-      console.error("Error fetching the price:", error); // Use console.error for better debugging
+      console.log("Error fetching the price:", error); // Use console.error for better debugging
     }
   }, []);
 
@@ -176,6 +176,7 @@ const CombinedForm = () => {
   return (
     <form onSubmit={formik.handleSubmit} className="space-y-4">
       <TextInput
+        required
         label="氏名"
         name="firstName"
         value={formik.values.firstName}
@@ -188,6 +189,7 @@ const CombinedForm = () => {
       />
 
       <TextInput
+        required
         label="氏名（カナ）"
         name="lastName"
         value={formik.values.lastName}
@@ -200,6 +202,7 @@ const CombinedForm = () => {
       />
 
       <TextInput
+        required
         label="メールアドレス"
         name="email"
         value={formik.values.email}
@@ -212,6 +215,7 @@ const CombinedForm = () => {
       />
 
       <TextInput
+        required
         label="電話番号"
         name="phone"
         value={formik.values.phone}
@@ -278,7 +282,7 @@ const CombinedForm = () => {
             htmlFor="walletAddress"
             className="font-bold text-[14px] text-[#212121]"
           >
-            【配当受取用】
+            【配当受取用】<span className="text-red-500 text-[10px]"> ※必須</span>
           </label>
           <label
             htmlFor="walletAddress"

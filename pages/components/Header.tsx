@@ -4,7 +4,7 @@ const HeaderComponent = () => {
   return (
     <div className="flex h-[60px] md:h-[90px] items-center bg-white px-5 md:px-[240px] justify-center">
       <Image
-        src="/logo.jpg"
+        src="/logo_mfm.svg"
         alt="logo"
         width={200}
         height={30}

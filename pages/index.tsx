@@ -14,8 +14,7 @@ export default function Home() {
             <Title title="申し込みフォーム" />
           </div>
           <p className="text-[12px] font-light mb-4 text-center">
-            下記のフォームをご入力ください。ご入金時のBTC数量は、以
-            下に表示される数量となります
+            下記のフォームをご入力ください。ご入金時のBTC数量は、以下に表示される数量となります
           </p>
           <ApplyForm />
           <a href="#" className="mt-14 block underline">
